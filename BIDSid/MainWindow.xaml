@@ -1,20 +1,115 @@
-﻿<Window x:Class="BIDSid.MainWindow"
+﻿<Window x:Class="TR.BIDSid.MainWindow"
+        Name="SWin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BIDSid"
+        xmlns:local="clr-namespace:TR.BIDSid"
         mc:Ignorable="d"
+        Loaded="OnLoad"
         WindowStyle="ToolWindow"
-        Title="BIDSid Setting" Height="300" Width="400">
+        Title="BIDSid Setting"
+        Height="300pt"
+        Width="300pt"
+        MinWidth="300pt"
+        MinHeight="240pt">
   <Grid>
-    <Label Content="設定" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-    <TextBlock Name="TestTx"
-               Margin="10,40,0,0"
-               HorizontalAlignment="Left"
-               TextWrapping="Wrap"
-               Text="TextBlock"
-               VerticalAlignment="Top"/>
+    <Label Content="接続情報" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    <Label Content="BIDSpp.dll 接続状況" Margin="0,24pt,42pt,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+    <Ellipse Name="BIDSppIsConnectedEllipse"
+             Margin="0,12pt,12pt,0"
+             Height="30pt"
+             Width="30pt"
+             HorizontalAlignment="Right"
+             VerticalAlignment="Top"
+             Fill="Red">
+      <Ellipse.Effect>
+        <DropShadowEffect Opacity="0.5" ShadowDepth="3" />
+      </Ellipse.Effect>
+    </Ellipse>
+    <Label Name="BIDSppVersion" Margin="0,12pt,12pt,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30pt" Width="30pt" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+    <Grid Name="ConnectInfo"
+          Margin="6pt,45pt,6pt,30pt"
+          ShowGridLines="True">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="0"/>
+        <RowDefinition Height="15pt"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="0"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="0"/>
+        <ColumnDefinition Width="3*"/>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="0"/>
+      </Grid.ColumnDefinitions>
+      <Label Grid.Row="1"
+             Grid.Column="1"
+             Content="接続先IPアドレス"
+             Padding="-1"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"/>
+      <Label Grid.Row="1"
+             Grid.Column="2"
+             Content="アプリ名"
+             Padding="-1"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"/>
+      <Label Grid.Row="1"
+             Grid.Column="3"
+             Content="バージョン"
+             Padding="-1"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"/>
+    </Grid>
+    <Grid Margin="0,0,0,0"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Bottom"
+          Height="27pt"
+          Background="LightGray">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="2*"/>
+        <ColumnDefinition Width="3*"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Content="再読込"
+              Grid.Column="0"
+              Click="OnLoad"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Margin="3pt,3pt,3pt,3pt"/>
+      <Button Content="閉じる"
+              Grid.Column="3"
+              Click="CloseEv"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Margin="3pt,3pt,3pt,3pt"/>
+      <Label Content="IP:NULL"
+             Name="ThisIPLab"
+             Grid.Column="1"
+             Margin="3pt,3pt,3pt,3pt"
+             Padding="-1"
+             VerticalContentAlignment="Center"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"/>
+      <Label Content="Name:NULL"
+             Name="ThisPCNameLab"
+             Grid.Column="2"
+             Margin="3pt,3pt,3pt,3pt"
+             Padding="-1"
+             VerticalContentAlignment="Center"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"/>
+    </Grid>
 
   </Grid>
 </Window>
