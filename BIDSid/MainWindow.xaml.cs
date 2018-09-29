@@ -1,13 +1,14 @@
 ﻿
 using System;
+using System.IO.Pipes;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 using Mackoy.Bvets;
-
+using System.Linq;
+using System.Collections.Generic;
 
 namespace TR.BIDSid
 {
@@ -58,7 +59,9 @@ namespace TR.BIDSid
   }
 
 
-
+  /// <summary>
+  /// BIDSppとBIDScsの仲介役を担うクラス
+  /// </summary>
   public class BIDSid : IInputDevice
   {
     public event InputEventHandler LeverMoved;
@@ -143,9 +146,11 @@ namespace TR.BIDSid
     static IntPtr hSharedMemory = CreateFileMapping(UIntPtr.Zero, IntPtr.Zero, 4, 0, size, SRAMName);
     static IntPtr pMemory = MapViewOfFile(hSharedMemory, 983071, 0, 0, size);
     BIDSSharedMemoryData bmd = new BIDSSharedMemoryData();
-    BIDSSharedMemoryData OldData = new BIDSSharedMemoryData();
+    bool OldIsEnabled = false;
     public void Dispose()
     {
+      UnmapViewOfFile(pMemory);
+      CloseHandle(hSharedMemory);
     }
     public void Load(string settingsPath)
     {
@@ -154,17 +159,77 @@ namespace TR.BIDSid
     public void Tick()
     {
       bmd = (BIDSSharedMemoryData)Marshal.PtrToStructure(pMemory, typeof(BIDSSharedMemoryData));
-      if (bmd.IsEnabled != OldData.IsEnabled)
+      if (bmd.IsEnabled != OldIsEnabled)
       {
         mw.BIDSppIsEnabled = bmd.IsEnabled;
         mw.BIDSppVersionInt = bmd.VersionNum;
+        OldIsEnabled = bmd.IsEnabled;
       }
-      OldData = bmd;
     }
 
     public void SetAxisRanges(int[][] ranges)
     {
     }
+
+    /*
+     * 手順
+     * 
+     */
+    static bool IsDisposing = false;
+    Thread PipeConnectWaitThread = new Thread(new ThreadStart(PipeCommunication));
+    //static List<NamedPipeServerStream> BIDSPipeList = new List<NamedPipeServerStream>();
+    //NamedPipeServerStream BIDSPipe = new NamedPipeServerStream("BIDSPipe", PipeDirection.InOut, 8);
+    static int PipeClientCount = 0;
+    private void PipeSVStart()
+    {
+      PipeConnectWaitThread.Start();
+    }
+    private void PipeSVEnd()
+    {
+      IsDisposing = true;
+      Thread DisposeThread = new Thread(() =>
+      {
+        for(int i = 0; i < 5; i++)
+        {
+          if (PipeConnectWaitThread.IsAlive) Thread.Sleep(1000);//スレッドが生きてる間は待ってあげる
+        }
+        if (PipeConnectWaitThread.IsAlive) PipeConnectWaitThread.Abort();//5秒経っても生きてたら殺す
+      });
+      DisposeThread.Start();
+      while (DisposeThread.IsAlive) Thread.Sleep(1000) ;//1秒ごとに、スレッドを殺し終えたか確認
+    }
+
+    private static void PipeCommunication()
+    {
+      while (PipeClientCount >= 8 || !IsDisposing) Thread.Sleep(1000);
+      if (IsDisposing) return;
+      using (var ns = new NamedPipeServerStream("BIDSPipe", PipeDirection.InOut, 8))
+      {
+        ns.WaitForConnection();
+        PipeClientCount++;
+        new Thread(PipeReadingLoop).Start(ns);
+        new Thread(PipeWritingLoop).Start(ns);
+
+        new Thread(PipeCommunication).Start();
+        while (ns.IsConnected || !IsDisposing) Thread.Sleep(500);
+        PipeClientCount--;
+      }
+    }
+
+    private static void PipeReadingLoop(object NPSS)
+    {
+      NPSS = (NamedPipeServerStream)NPSS;
+
+    }
+    private static void PipeWritingLoop(object NPSS)
+    {
+      NPSS = (NamedPipeServerStream)NPSS;
+
+    }
+
   }
+
+
+
 
 }
