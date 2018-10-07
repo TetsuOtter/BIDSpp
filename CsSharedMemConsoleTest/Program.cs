@@ -68,7 +68,7 @@ namespace CsSharedMemConsoleTest
     };
 
     //Version 200ではBeaconData,IsKeyPushed,SignalSetIntはDIsabled
-    public unsafe struct BIDSSharedMemoryData
+    public struct BIDSSharedMemoryData
     {
       public bool IsEnabled;
       public int VersionNum;
@@ -76,10 +76,10 @@ namespace CsSharedMemConsoleTest
       public State StateData;
       public Hand HandleData;
       public bool IsDoorClosed;
-      //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-      public unsafe fixed int Panel[256];
-      //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-      public unsafe fixed int Sound[256];
+      [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+      public int[] Panel;
+      [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+      public int[] Sound;
 
 
       //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]

@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:TR.BIDSid"
         mc:Ignorable="d"
         Loaded="OnLoad"
+        Unloaded="OnUnLoad"
         WindowStyle="ToolWindow"
         Title="BIDSid Setting"
         Height="300pt"
